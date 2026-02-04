@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Details | Gion Bus</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nyala&family=Outfit:wght@300;400;600;800&family=Poppins:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-dark text-light overflow-x-hidden">
+
+  <!-- Navbar Container -->
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark glass-nav" id="mainInfoNav"></nav>
+
+  <!-- Header / Hero for Route -->
+  <section class="py-5 mt-5 position-relative">
+    <div class="container py-5 text-center">
+      <span class="badge bg-gold text-dark mb-3 px-3 py-2 rounded-pill fw-bold" id="route-type">Luxury Coach</span>
+      <h1 class="display-3 fw-bold text-gradient mb-2" id="route-title">Addis Ababa <i
+          class="fas fa-arrow-right mx-3 text-secondary"></i> Destination</h1>
+      <p class="lead text-secondary opacity-75" id="route-meta">8h 30m • 500 km</p>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <section class="pb-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- Left Column: Timeline & Info -->
+        <div class="col-lg-8">
+
+          <!-- Timeline Card -->
+          <div class="card glass-card border-0 p-4 mb-4" data-aos="fade-up">
+            <h3 class="mb-4 text-gold border-bottom border-secondary pb-2">Journey Timeline</h3>
+            <div class="timeline position-relative ps-4 border-start border-secondary" id="timeline-container">
+              <!-- Dynamic Stops Go Here -->
+            </div>
+          </div>
+
+          <!-- Amenities Card -->
+          <div class="card glass-card border-0 p-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="mb-4 text-gold border-bottom border-secondary pb-2">On-Board Services</h3>
+            <div class="row g-3" id="amenities-container">
+              <!-- Dynamic Amenities -->
+            </div>
+          </div>
+
+          <!-- Hotel / Sleep Info (Conditional) -->
+          <div class="card glass-card border-0 p-4 mb-4 d-none" id="hotel-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="row align-items-center">
+              <div class="col-md-4">
+                <img src="https://placehold.co/400x300/111/gold?text=Partner+Hotel" class="img-fluid rounded-3"
+                  alt="Hotel">
+              </div>
+              <div class="col-md-8">
+                <span class="badge bg-secondary mb-2">Overnight Stay Included</span>
+                <h4 class="text-gold" id="hotel-name">Hotel Name</h4>
+                <div class="mb-2 text-warning" id="hotel-stars"></div>
+                <p class="text-secondary small mb-0">Your ticket includes a free stay at our partner hotel. Dinner and
+                  breakfast are provided.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Booking Widget -->
+        <div class="col-lg-4">
+          <div class="card glass-card border-0 p-4 sticky-top text-center" style="top: 100px;" data-aos="fade-left">
+            <p class="text-muted mb-1">Total Price per Person</p>
+            <h2 class="display-5 fw-bold text-gold mb-4" id="route-price">1,200 ETB</h2>
+
+            <div class="d-grid gap-3">
+              <button class="btn btn-gold btn-lg rounded-pill" onclick="BookingManager.openModal()">Book This
+                Route</button>
+              <button class="btn btn-outline-light rounded-pill" onclick="window.print()">Download Schedule PDF</button>
+            </div>
+
+            <div class="mt-4 pt-4 border-top border-secondary text-start small text-secondary">
+              <p class="mb-2"><i class="fas fa-check text-success me-2"></i> Free Cancellation (24h)</p>
+              <p class="mb-2"><i class="fas fa-check text-success me-2"></i> Instant Confirmation</p>
+              <p class="mb-0"><i class="fas fa-check text-success me-2"></i> E-Ticket Sent to Phone</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black py-5 mt-5 border-top border-dark-subtle" id="mainFooter"></footer>
+
+  <!-- Booking Modal (Reused / Adapted) -->
+  <div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-modal text-light">
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title">Confirm Booking</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="mb-3">You are booking: <strong class="text-gold" id="modal-route-name"></strong></p>
+          <form id="bookingForm" onsubmit="BookingManager.confirm(event)">
+            <div class="mb-3">
+              <label class="form-label text-secondary">Passenger Name</label>
+              <input type="text" class="form-control bg-dark border-secondary text-light" required id="p-name">
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-secondary">Phone Number</label>
+              <input type="tel" class="form-control bg-dark border-secondary text-light" required id="p-phone">
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-secondary">Travel Date</label>
+              <input type="date" class="form-control bg-dark border-secondary text-light" required id="p-date">
+            </div>
+            <button type="submit" class="btn btn-gold w-100 py-2 fw-bold">Confirm & Pay</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- App Scripts (Locals rely on correct relative path) -->
+  <script src="../assets/js/db.js"></script>
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/translations.js"></script>
+  <script src="../assets/js/lang-manager.js"></script>
+  <script src="../assets/js/modals.js"></script>
+  <script src="../assets/js/main.js"></script>
+
+  <!-- Page Specific Logic -->
+  <script>
+    const BookingManager = {
+      routeId: null,
+
+      init: () => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (!id) {
+          window.location.href = '../index.html'; // Fallback
+          return;
+        }
+        BookingManager.routeId = id;
+        BookingManager.loadData(id);
+      },
+
+      loadData: (id) => {
+        const route = DB.getRouteById(id);
+        if (!route) return;
+
+        // Bind Header
+        document.getElementById('route-type').textContent = route.busType;
+        document.getElementById('route-title').innerHTML = `${route.from} <i class="fas fa-arrow-right mx-3 text-secondary"></i> ${route.to}`;
+        document.getElementById('route-meta').textContent = `${route.duration} • ${route.distance} • Departs ${route.departure}`;
+        document.getElementById('route-price').textContent = Number(route.price).toLocaleString() + ' ETB';
+        document.getElementById('modal-route-name').textContent = `${route.from} to ${route.to}`;
+
+        // Render Timeline
+        const timeline = document.getElementById('timeline-container');
+        timeline.innerHTML = '';
+
+        // 1. Departure
+        timeline.innerHTML += `
+                    <div class="mb-4 position-relative">
+                        <div class="position-absolute start-0 translate-middle rounded-circle bg-gold" style="width: 12px; height: 12px; left: -25px !important; top: 5px;"></div>
+                        <h5 class="mb-0 text-white">${route.departure} - Departure</h5>
+                        <p class="text-secondary small">Main Station, ${route.from}</p>
+                    </div>
+                `;
+
+        // 2. Stops
+        route.stops.forEach(stop => {
+          let icon = stop.type === 'Lunch' ? 'utensils' : 'coffee';
+          timeline.innerHTML += `
+                        <div class="mb-4 position-relative">
+                            <div class="position-absolute start-0 translate-middle rounded-circle bg-secondary border border-dark" style="width: 10px; height: 10px; left: -25px !important; top: 5px;"></div>
+                            <h5 class="mb-1 text-light">${stop.name} <span class="badge bg-dark border border-secondary text-gold ms-2">${stop.type}</span></h5>
+                            <p class="text-secondary small mb-1">${stop.duration} Stop</p>
+                            <div class="bg-glass-light p-2 rounded small d-inline-block border border-secondary text-muted">
+                                <i class="fas fa-${icon} me-1 text-warning"></i> ${stop.food}
+                            </div>
+                        </div>
+                    `;
+        });
+
+        // 3. Arrival/Hotel
+        if (route.hotel) {
+          const hotelCard = document.getElementById('hotel-card');
+          hotelCard.classList.remove('d-none');
+          document.getElementById('hotel-name').textContent = route.hotel.name;
+          document.getElementById('hotel-stars').innerHTML = '<i class="fas fa-star"></i>'.repeat(route.hotel.stars);
+        }
+
+        timeline.innerHTML += `
+                    <div class="position-relative">
+                         <div class="position-absolute start-0 translate-middle rounded-circle bg-gold" style="width: 12px; height: 12px; left: -25px !important; top: 5px;"></div>
+                         <h5 class="mb-0 text-white">${route.arrival} - Arrival</h5>
+                         <p class="text-secondary small">Central Station, ${route.to}</p>
+                    </div>
+                `;
+
+        // Render Amenities
+        const amens = document.getElementById('amenities-container');
+        amens.innerHTML = '';
+        route.features.forEach(f => {
+          amens.innerHTML += `
+                        <div class="col-6">
+                            <div class="d-flex align-items-center text-secondary">
+                                <i class="fas fa-check-circle text-gold me-2"></i> <span class="text-capitalize">${f}</span>
+                            </div>
+                        </div>
+                    `;
+        });
+      },
+
+      openModal: () => {
+        const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+        modal.show();
+      },
+
+      confirm: (e) => {
+        e.preventDefault();
+        const name = document.getElementById('p-name').value;
+        const date = document.getElementById('p-date').value;
+        const route = DB.getRouteById(BookingManager.routeId);
+
+        const booking = {
+          routeFrom: route.from,
+          routeTo: route.to,
+          passenger: name,
+          travelDate: date,
+          price: route.price,
+          status: 'Confirmed'
+        };
+
+        DB.saveBooking(booking);
+
+        alert('Booking Confirmed! Your e-ticket ID is: ' + booking.id);
+        // In a real app we would generate PDF here
+        location.reload();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', BookingManager.init);
+  </script>
+</body>
+
+</html>
